@@ -17,26 +17,13 @@ Winget is a package manager installed by default on windows.
 
 An installer for clojure is available from [casselc/clj-msi](https://github.com/casselc/clj-msi/releases/)
 
-## [chocolatey](https://chocolatey.org/)
-
-```
-choco install nvm
-nvm install 18
-nvm use 18
-npm install -g yarn
-choco install visualstudio2022community
-choco install javaruntime
-choco install clojure
-```
-
-
 ## [scoop](https://scoop.sh/)
 
 ```
 scoop bucket add scoop-clojure https://github.com/littleli/scoop-clojure
 scoop bucket add extras
 scoop bucket add java
-scoop install java/openjdk clojure clj-deps babashka leiningen nodejs-lts
+scoop install java/openjdk clj-deps babashka leiningen nodejs-lts
 ```
 
 ## Troubleshooting
