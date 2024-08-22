@@ -239,7 +239,7 @@
                 (and exist? (not loading?)))
           (content-fn)
           [:p.text-error.text-xs [:small.opacity-80
-                                    (util/format "%s not found!" (string/capitalize type))]])))))
+                                  (util/format "%s not found!" (string/capitalize type))]])))))
 
 (defn open-lightbox
   [e]
@@ -291,9 +291,9 @@
                             ;; TODO: need a better way to prevent the clicking to edit current block
                          (js/setTimeout #(reset! *resizing-image? false) 200)))
           :onClick (fn [e]
-                     (when @*resizing-image? (util/stop e)))}
-         (and (:width metadata) (not (util/mobile?)))
-         (assoc :style {:width (:width metadata)}))
+                     (when @*resizing-image? (util/stop e)))
+          (and (:width metadata) (not (util/mobile?)))
+          (assoc :style {:width (:width metadata)})})
         {})
       [:div.asset-container {:key "resize-asset-container"}
        [:img.rounded-sm.relative
@@ -330,19 +330,19 @@
                   (fn [e]
                     (when-let [block-id (:block/uuid config)]
                       (let [confirm-fn (ui/make-confirm-modal
-                                         {:title         (t :asset/confirm-delete (.toLocaleLowerCase (t :text/image)))
-                                          :sub-title     (if local? :asset/physical-delete "")
-                                          :sub-checkbox? local?
-                                          :on-confirm    (fn [_e {:keys [close-fn sub-selected]}]
-                                                           (close-fn)
-                                                           (editor-handler/delete-asset-of-block!
-                                                             {:block-id      block-id
-                                                              :local?        local?
-                                                              :delete-local? (and sub-selected (first sub-selected))
-                                                              :repo          (state/get-current-repo)
-                                                              :href          src
-                                                              :title         title
-                                                              :full-text     full-text}))})]
+                                        {:title         (t :asset/confirm-delete (.toLocaleLowerCase (t :text/image)))
+                                         :sub-title     (if local? :asset/physical-delete "")
+                                         :sub-checkbox? local?
+                                         :on-confirm    (fn [_e {:keys [close-fn sub-selected]}]
+                                                          (close-fn)
+                                                          (editor-handler/delete-asset-of-block!
+                                                           {:block-id      block-id
+                                                            :local?        local?
+                                                            :delete-local? (and sub-selected (first sub-selected))
+                                                            :repo          (state/get-current-repo)
+                                                            :href          src
+                                                            :title         title
+                                                            :full-text     full-text}))})]
                         (util/stop e)
                         (state/set-modal! confirm-fn))))}
                  (ui/icon "trash")])
@@ -942,7 +942,7 @@
         [:span.warning.mr-1 {:title "Block ref invalid"}
          (block-ref/->block-ref id)]))
     [:span.warning.mr-1 {:title "Block ref invalid"}
-      (block-ref/->block-ref id)]))
+     (block-ref/->block-ref id)]))
 
 (defn inline-text
   ([format v]
@@ -1124,9 +1124,9 @@
        (cond->
         {:href      (path/path-join "file://" path)
          :data-href path
-         :target    "_blank"}
-        title
-        (assoc :title title))
+         :target    "_blank"
+         title
+         (assoc :title title)})
        (map-inline config label)))
 
     :else
@@ -1218,9 +1218,9 @@
            :a.external-link
            (cond->
             {:href (ar-url->http-url href)
-             :target "_blank"}
-            title
-            (assoc :title title))
+             :target "_blank"
+             title
+             (assoc :title title)})
            (map-inline config label))
 
           :else
@@ -1228,9 +1228,9 @@
            :a.external-link
            (cond->
             {:href href
-             :target "_blank"}
-            title
-            (assoc :title title))
+             :target "_blank"
+             title
+             (assoc :title title)})
            (map-inline config label)))))))
 
 (declare ->hiccup inline)
@@ -1558,109 +1558,109 @@
                     [:div.warning {:title "Invalid hiccup"}
                      s])]
     (-> result'
-       (hiccups.core/html)
-       (security/sanitize-html))))
+        (hiccups.core/html)
+        (security/sanitize-html))))
 
 (defn inline
   [{:keys [html-export?] :as config} item]
   (match item
-         [(:or "Plain" "Spaces") s]
-         s
+    [(:or "Plain" "Spaces") s]
+    s
 
-         ["Superscript" l]
-         (->elem :sup (map-inline config l))
-         ["Subscript" l]
-         (->elem :sub (map-inline config l))
+    ["Superscript" l]
+    (->elem :sup (map-inline config l))
+    ["Subscript" l]
+    (->elem :sub (map-inline config l))
 
-         ["Tag" _]
-         (when-let [s (gp-block/get-tag item)]
-           (let [s (text/page-ref-un-brackets! s)]
-             (page-cp (assoc config :tag? true) {:block/name s})))
+    ["Tag" _]
+    (when-let [s (gp-block/get-tag item)]
+      (let [s (text/page-ref-un-brackets! s)]
+        (page-cp (assoc config :tag? true) {:block/name s})))
 
-         ["Emphasis" [[kind] data]]
-         (emphasis-cp config kind data)
+    ["Emphasis" [[kind] data]]
+    (emphasis-cp config kind data)
 
-         ["Entity" e]
-         [:span {:dangerouslySetInnerHTML
-                 {:__html (security/sanitize-html (:html e))}}]
+    ["Entity" e]
+    [:span {:dangerouslySetInnerHTML
+            {:__html (security/sanitize-html (:html e))}}]
 
-         ["Latex_Fragment" [display s]] ;display can be "Displayed" or "Inline"
-         (if html-export?
-           (latex/html-export s false true)
-           (latex/latex (str (d/squuid)) s false (not= display "Inline")))
+    ["Latex_Fragment" [display s]] ;display can be "Displayed" or "Inline"
+    (if html-export?
+      (latex/html-export s false true)
+      (latex/latex (str (d/squuid)) s false (not= display "Inline")))
 
-         [(:or "Target" "Radio_Target") s]
-         [:a {:id s} s]
+    [(:or "Target" "Radio_Target") s]
+    [:a {:id s} s]
 
-         ["Email" address]
-         (let [{:keys [local_part domain]} address
-               address (str local_part "@" domain)]
-           [:a {:href (str "mailto:" address)} address])
+    ["Email" address]
+    (let [{:keys [local_part domain]} address
+          address (str local_part "@" domain)]
+      [:a {:href (str "mailto:" address)} address])
 
-         ["Nested_link" link]
-         (nested-link config html-export? link)
+    ["Nested_link" link]
+    (nested-link config html-export? link)
 
-         ["Link" link]
-         (link-cp config html-export? link)
+    ["Link" link]
+    (link-cp config html-export? link)
 
-         [(:or "Verbatim" "Code") s]
-         [:code s]
+    [(:or "Verbatim" "Code") s]
+    [:code s]
 
-         ["Inline_Source_Block" x]
-         [:code (:code x)]
+    ["Inline_Source_Block" x]
+    [:code (:code x)]
 
-         ["Export_Snippet" "html" s]
-         (when (not html-export?)
-           [:span {:dangerouslySetInnerHTML
-                   {:__html (security/sanitize-html s)}}])
+    ["Export_Snippet" "html" s]
+    (when (not html-export?)
+      [:span {:dangerouslySetInnerHTML
+              {:__html (security/sanitize-html s)}}])
 
-         ["Inline_Hiccup" s] ;; String to hiccup
-         (ui/catch-error
-          [:div.warning {:title "Invalid hiccup"} s]
-          [:span {:dangerouslySetInnerHTML
-                  {:__html (hiccup->html s)}}])
+    ["Inline_Hiccup" s] ;; String to hiccup
+    (ui/catch-error
+     [:div.warning {:title "Invalid hiccup"} s]
+     [:span {:dangerouslySetInnerHTML
+             {:__html (hiccup->html s)}}])
 
-         ["Inline_Html" s]
-         (when (not html-export?)
+    ["Inline_Html" s]
+    (when (not html-export?)
            ;; TODO: how to remove span and only export the content of `s`?
-           [:span {:dangerouslySetInnerHTML {:__html (security/sanitize-html s)}}])
+      [:span {:dangerouslySetInnerHTML {:__html (security/sanitize-html s)}}])
 
-         [(:or "Break_Line" "Hard_Break_Line")]
-         [:br]
+    [(:or "Break_Line" "Hard_Break_Line")]
+    [:br]
 
-         ["Timestamp" [(:or "Scheduled" "Deadline") _timestamp]]
-         nil
-         ["Timestamp" ["Date" t]]
-         (timestamp t "Date")
-         ["Timestamp" ["Closed" t]]
-         (timestamp t "Closed")
-         ["Timestamp" ["Range" t]]
-         (range t false)
-         ["Timestamp" ["Clock" ["Stopped" t]]]
-         (range t true)
-         ["Timestamp" ["Clock" ["Started" t]]]
-         (timestamp t "Started")
+    ["Timestamp" [(:or "Scheduled" "Deadline") _timestamp]]
+    nil
+    ["Timestamp" ["Date" t]]
+    (timestamp t "Date")
+    ["Timestamp" ["Closed" t]]
+    (timestamp t "Closed")
+    ["Timestamp" ["Range" t]]
+    (range t false)
+    ["Timestamp" ["Clock" ["Stopped" t]]]
+    (range t true)
+    ["Timestamp" ["Clock" ["Started" t]]]
+    (timestamp t "Started")
 
-         ["Cookie" ["Percent" n]]
-         [:span {:class "cookie-percent"}
-          (util/format "[%d%%]" n)]
-         ["Cookie" ["Absolute" current total]]
-         [:span {:class "cookie-absolute"}
-          (util/format "[%d/%d]" current total)]
+    ["Cookie" ["Percent" n]]
+    [:span {:class "cookie-percent"}
+     (util/format "[%d%%]" n)]
+    ["Cookie" ["Absolute" current total]]
+    [:span {:class "cookie-absolute"}
+     (util/format "[%d/%d]" current total)]
 
-         ["Footnote_Reference" options]
-         (let [{:keys [name]} options
-               encode-name (util/url-encode name)]
-           [:sup.fn
-            [:a {:id (str "fnr." encode-name)
-                 :class "footref"
-                 :on-click #(route-handler/jump-to-anchor! (str "fn." encode-name))}
-             name]])
+    ["Footnote_Reference" options]
+    (let [{:keys [name]} options
+          encode-name (util/url-encode name)]
+      [:sup.fn
+       [:a {:id (str "fnr." encode-name)
+            :class "footref"
+            :on-click #(route-handler/jump-to-anchor! (str "fn." encode-name))}
+        name]])
 
-         ["Macro" options]
-         (macro-cp config options)
+    ["Macro" options]
+    (macro-cp config options)
 
-         :else ""))
+    :else ""))
 
 (rum/defc block-child
   [block]
@@ -1721,11 +1721,11 @@
           (when (map? child)
             (let [child  (dissoc child :block/meta)
                   config (cond->
-                           (-> config
-                               (assoc :block/uuid (:block/uuid child))
-                               (dissoc :breadcrumb-show? :embed-parent))
-                           (or ref? query?)
-                           (assoc :ref-query-child? true))]
+                          (-> config
+                              (assoc :block/uuid (:block/uuid child))
+                              (dissoc :breadcrumb-show? :embed-parent)
+                              (or ref? query?)
+                              (assoc :ref-query-child? true)))]
               (rum/with-key (block-container config child)
                 (str (:blocks-container-id config) "-" (:block/uuid child))))))]])))
 
@@ -1787,9 +1787,9 @@
                                  (when order-list? " as-order-list typed-list"))}
 
                     [:span.bullet (cond->
-                                    {:blockid (str uuid)}
+                                   {:blockid (str uuid)
                                     selected?
-                                    (assoc :class "selected"))
+                                    (assoc :class "selected")})
                      (when order-list?
                        [:label (str order-list-idx ".")])]]]]
        (cond
@@ -1855,7 +1855,18 @@
     :on-change (fn [event]
                  (let [target (.-target event)
                        block (:block config)
-                       item-content (.. target -nextSibling -data)]
+;; root cause: item-content is nil when styled with bold, italic etc.
+;; Algorithm goal: Identify checkbox number in text, 
+;; send that number instead of the item-content
+;;  [...element.parentNode.children].indexOf(element);
+;;  this does work, but only if the checkboxes are not indented under sub-lists
+                       target-checkbox (.indexOf (.from js/Array (.. target -parentNode -parentNode -parentNode -children)) (.. target -parentNode -parentNode))
+                       item-content (if (= 3 (.. target -nextSibling -nodeType))
+                                      ;; if node.nextSibling is Text, use that
+                                      (.. target -nextSibling -data)
+                                      ;; otherwise, detect HTML or Markdown?, 
+                                      (.. target -nextSibling -data))]
+                   (prn target-checkbox item-content block (.toString target))
                    (editor-handler/toggle-list-checkbox block item-content)))}))
 
 (defn marker-switch
@@ -2236,8 +2247,8 @@
              (and block-content? (not= move-to :nested))
              (and (not block-content?)
                   (seq (:block/children block))
-                  (= move-to :nested)))
-         (dnd-separator move-to block-content?))))))
+                  (= move-to :nested))
+             (dnd-separator move-to block-content?)))))))
 
 (defn clock-summary-cp
   [block body]
@@ -2308,14 +2319,14 @@
         attrs (cond->
                {:blockid       (str uuid)
                 :data-type (name block-type)
-                :style {:width "100%" :pointer-events (when stop-events? "none")}}
+                :style {:width "100%" :pointer-events (when stop-events? "none")}
 
-               (not (string/blank? (:hl-color properties)))
-               (assoc :data-hl-color (:hl-color properties))
+                (not (string/blank? (:hl-color properties)))
+                (assoc :data-hl-color (:hl-color properties))
 
-               (not block-ref?)
-               (assoc mouse-down-key (fn [e]
-                                       (block-content-on-mouse-down e block block-id content edit-input-id))))]
+                (not block-ref?)
+                (assoc mouse-down-key (fn [e]
+                                        (block-content-on-mouse-down e block block-id content edit-input-id)))})]
     [:div.block-content.inline
      (cond-> {:id (str "block-content-" uuid)
               :class (when selected? "select-none")
@@ -2870,22 +2881,22 @@
                    (when order-list? " is-order-list")
                    (when (string/blank? content) " is-blank"))
        :blockid (str uuid)
-       :haschild (str (boolean has-child?))}
+       :haschild (str (boolean has-child?))
 
-      level
-      (assoc :level level)
+       level
+       (assoc :level level)
 
-      (not slide?)
-      (merge attrs)
+       (not slide?)
+       (merge attrs)
 
-      (or reference? embed?)
-      (assoc :data-transclude true)
+       (or reference? embed?)
+       (assoc :data-transclude true)
 
-      embed?
-      (assoc :data-embed true)
+       embed?
+       (assoc :data-embed true)
 
-      custom-query?
-      (assoc :data-query true))
+       custom-query?
+       (assoc :data-query true)})
 
      (when (and ref? breadcrumb-show?)
        (breadcrumb config repo uuid {:show-page? false
@@ -2933,7 +2944,7 @@
   [cp-state]
   (let [args (:rum/args cp-state)]
     (assoc cp-state
-      :rum/args (assoc (vec args) 0 (block-handler/attach-order-list-state (first args) (second args))))))
+           :rum/args (assoc (vec args) 0 (block-handler/attach-order-list-state (first args) (second args))))))
 
 (rum/defcs block-container < rum/reactive
   (rum/local false ::show-block-left-menu?)
@@ -2952,8 +2963,8 @@
                :else
                nil)
              (-> (assoc state
-                   ::control-show? (atom false)
-                   ::navigating-block (atom (:block/uuid block)))
+                        ::control-show? (atom false)
+                        ::navigating-block (atom (:block/uuid block)))
                  (attach-order-list-state!))))
 
    :will-remount (fn [_old-state new-state]
@@ -2967,10 +2978,10 @@
                           b1                  (second (:rum/args old-state))
                           b2                  (second (:rum/args new-state))
                           result              (or
-                                                (not= (select-keys b1 compare-keys)
-                                                      (select-keys b2 compare-keys))
-                                                (not= (select-keys (first (:rum/args old-state)) config-compare-keys)
-                                                      (select-keys (first (:rum/args new-state)) config-compare-keys)))]
+                                               (not= (select-keys b1 compare-keys)
+                                                     (select-keys b2 compare-keys))
+                                               (not= (select-keys (first (:rum/args old-state)) config-compare-keys)
+                                                     (select-keys (first (:rum/args new-state)) config-compare-keys)))]
                       (boolean result)))
    :will-unmount (fn [state]
                    ;; restore root block's collapsed state
@@ -3052,9 +3063,9 @@
         (->elem
          :li
          (cond->
-          {:checked checked?}
-          number
-          (assoc :value number))
+          {:checked checked?
+           number
+           (assoc :value number)})
          (vec-cat
           [(->elem
             :p
