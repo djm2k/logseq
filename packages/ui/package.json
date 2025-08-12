@@ -7,7 +7,7 @@
     "watch:ui:examples": "parcel serve ./examples/index.html",
     "build:ui:only": "parcel build --target ui",
     "build:ionic:only": "parcel build --target ionic",
-    "build:ui": "rm -rf .parcel-cache && yarn build:ui:only && yarn build:ionic:only",
+    "build:ui": "rimraf .parcel-cache && yarn build:ui:only && yarn build:ionic:only",
     "watch:storybook": "storybook dev -p 6006",
     "postinstall": "yarn build:ui"
   },
