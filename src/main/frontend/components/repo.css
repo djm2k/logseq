@@ -23,7 +23,7 @@
     }
 
     .cp__repos-list-wrap {
-      @apply max-h-80 overflow-scroll mx-[-8px] px-2 pb-2;
+      @apply max-h-80 overflow-y-scroll mx-[-8px] px-2 pb-2;
     }
 
     .no-repos {
@@ -46,7 +46,8 @@
       @apply flex w-[90%] overflow-hidden items-center select-none;
     }
 
-    .repo-text, .repo-name {
+    .repo-text,
+    .repo-name {
       @apply flex w-[95%] items-center;
 
       .ui__icon {
@@ -64,39 +65,35 @@
   @apply -mx-2 px-2 pb-1.5 pt-3 border-t flex flex-col rounded-b h-fit;
 
   .ui__button {
-    @apply w-full !py-4 !justify-start opacity-70 font-medium hover:opacity-90
-    items-center gap-1.5 hover:bg-gray-03;
+    @apply w-full !py-4 !justify-start opacity-70 font-medium hover:opacity-90 items-center gap-1.5 hover:bg-gray-03;
   }
 }
 
 .cp__graphs-selector {
-  > a.item {
-    @apply flex items-center relative flex-1 overflow-hidden
-    pl-1 py-1 pr-4 opacity-90 active:opacity-70 rounded-md;
+  >a.item {
+    @apply flex items-center relative flex-1 overflow-hidden pl-1 py-1 pr-4 opacity-90 active:opacity-70 rounded-md;
 
-    > .thumb {
-      @apply w-6 h-6 overflow-hidden flex flex-shrink-0 items-center
-      -ml-0.5 justify-center rounded opacity-80 dark:opacity-50;
+    >.thumb {
+      @apply w-6 h-6 overflow-hidden flex flex-shrink-0 items-center -ml-0.5 justify-center rounded opacity-80 dark:opacity-50;
 
-      > .ui__icon {
+      >.ui__icon {
         @apply mr-0;
       }
     }
 
-    > strong {
-      @apply whitespace-nowrap overflow-hidden text-ellipsis pl-1
-      font-medium relative pr-4 text-sm;
+    >strong {
+      @apply whitespace-nowrap overflow-hidden text-ellipsis pl-1 font-medium relative pr-4 text-sm;
     }
 
-    > .ui__icon {
+    >.ui__icon {
       @apply absolute -right-1 top-2 opacity-40;
     }
   }
 
-  > span {
+  >span {
     @apply relative flex items-center -mr-1;
 
-    > .ui__button {
+    >.ui__button {
       @apply p-1 opacity-40 hover:opacity-70 active:opacity-100;
     }
   }
